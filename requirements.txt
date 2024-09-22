@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydub
+torch
+numpy
+librosa
+scikit-learn
+python-dotenv
+Pydantic
