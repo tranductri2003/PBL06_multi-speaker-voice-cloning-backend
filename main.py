@@ -47,7 +47,7 @@ async def compare_speakers(audio1: UploadFile = File(...), audio2: UploadFile = 
     """
     used_model = model
     curr_model_file = 'transformer'
-    sequence_length = sequence_length_in_ms / 1000 * 16000
+    sequence_length = int(sequence_length_in_ms / 1000 * 16000)
     if model_file is not None:
         if model_type == "transformer":
             used_model = SpeakerTransformerEncoder(device=device)
