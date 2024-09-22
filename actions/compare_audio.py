@@ -22,7 +22,7 @@ def preprocess_audio(file: BytesIO, seq_len=128, num_iter=33) -> torch.Tensor:
     """
     uttn = Utterance(raw_file=file)
     return torch.tensor(
-        np.array([uttn.random_mel_segment(seq_len=seq_len)] for _ in (num_iter))
+        np.array([uttn.random_mel_segment(seq_len=seq_len) for _ in range(num_iter)])
     ).transpose(1, 2)
 
 
