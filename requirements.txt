@@ -6,4 +6,4 @@ numpy
 librosa
 scikit-learn
 python-dotenv
-Pydantic
+python-multipart
