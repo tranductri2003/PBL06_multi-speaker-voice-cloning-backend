@@ -1,2 +1,0 @@
-from utils.models.speaker_encoder.transformer import SpeakerTransformerEncoder
-from utils.models.speaker_encoder.lstm import SpeakerLstmEncoder
