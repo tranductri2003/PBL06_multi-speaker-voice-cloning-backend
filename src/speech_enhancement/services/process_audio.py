@@ -8,18 +8,15 @@ from .process_func import (
     scaled_in,
 )
 
-def preprocess_audio_for_prediction(audio):
+def preprocess_audio_for_prediction(raw_audio):
+    sample_rate = 8000
+    min_duration = 1.0
+    frame_length = 8064
+    hop_length_frame = 8064
+    n_fft = 255
+    hop_length_fft = 63
 
-    # audio_dir: str,
-    # audio_input: list,
-    # sample_rate: int = 8000,
-    # min_duration: float = 1.0,
-    # frame_length: int = 8064,
-    # hop_length_frame: int = 8064,
-    # n_fft: int = 255,
-    # hop_length_fft: int = 63
-    # Process audio files
-    audio_frames = audio_files_to_numpy(raw_audio, sample_rate, frame_length, hop_length_frame, min_duration=1.0)
+    audio_frames = audio_files_to_numpy(raw_audio, sample_rate, frame_length, hop_length_frame, min_duration)
     
     # Spectrogram dimensions
     dim_square_spec = int(n_fft / 2) + 1

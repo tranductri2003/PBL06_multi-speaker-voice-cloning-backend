@@ -7,3 +7,7 @@ librosa
 scikit-learn
 python-dotenv
 python-multipart
+scikit-learn
+tensorflow
+python-dotenv
+matplotlib
