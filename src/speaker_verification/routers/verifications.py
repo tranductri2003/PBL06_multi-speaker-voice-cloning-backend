@@ -7,8 +7,7 @@ from speaker_verification.models import TRANSFORMER_SPEAKER_ENCODER, LSTM_SPEAKE
 from speaker_verification.services.verifications import calculate_cosine_similarity
     
 
-router = APIRouter()
-
+router = APIRouter(prefix="/speaker-verification")
 
 @router.post("/transformer")
 async def transfromer_compare_uterrances(

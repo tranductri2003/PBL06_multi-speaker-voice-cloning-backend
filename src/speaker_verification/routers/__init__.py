@@ -1,1 +1,1 @@
-from speaker_verification.routers.verifications import router
+from speaker_verification.routers.verifications import router as speaker_verification_router
