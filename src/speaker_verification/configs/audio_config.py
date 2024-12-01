@@ -16,5 +16,5 @@ class SpeakerEncoderAudioConfig(AudioConfig):
     MAX_AMPLITUDE = 1.0
     MIN_LEVEL_DB = -100
     REF_LEVEL_DB = 0
-    NUM_FRAMES = 160
+    NUM_FRAMES = 128
     SCALING_FACTOR = 0.95
