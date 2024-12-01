@@ -28,7 +28,6 @@ else
     source "$VENV_DIR/bin/activate"
 fi
 
-
 echo "Upgrading pip..."
 pip install --upgrade pip
 
