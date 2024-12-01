@@ -18,14 +18,6 @@ FASTAPI_APP_MODULE="app:app"
 
 cd "$PROJECT_DIR" || { echo "Project directory not found! Exiting."; exit 1; }
 
-cd src
-
-# Define the command to run the FastAPI application using Uvicorn
-UVICORN_CMD="uvicorn $FASTAPI_APP_MODULE --host 0.0.0.0 --port 8000"
-
-# Define the log file for the FastAPI application
-LOG_FILE="$PROJECT_DIR/fastapi_app.log"
-
 # Activate the virtual environment if it exists; otherwise, create it
 if [ -d "$VENV_DIR" ]; then
     echo "Activating existing virtual environment..."
@@ -41,6 +33,14 @@ pip install --upgrade pip
 
 echo "Installing dependencies..."
 pip install -r requirements.txt
+
+cd src
+
+# Define the command to run the FastAPI application using Uvicorn
+UVICORN_CMD="uvicorn $FASTAPI_APP_MODULE --host 0.0.0.0 --port 8000"
+
+# Define the log file for the FastAPI application
+LOG_FILE="$PROJECT_DIR/fastapi_app.log"
 
 # Stop any running instances of the FastAPI application
 echo "Stopping existing FastAPI application instances..."
