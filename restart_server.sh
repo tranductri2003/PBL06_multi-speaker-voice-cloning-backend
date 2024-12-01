@@ -14,7 +14,7 @@ PROJECT_DIR="/home/tranductri2003/Code/PBL06_multi-speaker-voice-cloning/PBL06_m
 VENV_DIR="$PROJECT_DIR/venv"
 
 # Define the FastAPI application module
-FASTAPI_APP_MODULE="app:app"  # app là tên file, app là instance FastAPI
+FASTAPI_APP_MODULE="app:app"
 
 # Define the command to run the FastAPI application using Uvicorn
 UVICORN_CMD="uvicorn $FASTAPI_APP_MODULE --host 0.0.0.0 --port 8000"
@@ -35,11 +35,9 @@ else
     source "$VENV_DIR/bin/activate"
 fi
 
-# Upgrade pip to the latest version
 echo "Upgrading pip..."
 pip install --upgrade pip
 
-# Install or update dependencies from requirements.txt
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
@@ -51,7 +49,6 @@ pkill -f "$UVICORN_CMD" || echo "No existing FastAPI instances running."
 echo "Starting FastAPI application..."
 nohup $UVICORN_CMD > "$LOG_FILE" 2>&1 &
 
-# Deactivate the virtual environment
 deactivate
 
 echo "FastAPI application has been restarted successfully."
