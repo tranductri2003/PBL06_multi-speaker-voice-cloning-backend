@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --------------------------------------------------
-# Script to Restart the Flask Server on Raspberry Pi
+# Script to Restart the FastAPI Server on Raspberry Pi
 # --------------------------------------------------
 
 # Exit immediately if a command exits with a non-zero status
@@ -13,17 +13,18 @@ PROJECT_DIR="/home/tranductri2003/Code/PBL06_multi-speaker-voice-cloning/PBL06_m
 # Define the virtual environment directory
 VENV_DIR="$PROJECT_DIR/venv"
 
-# Define the Flask application file
-FLASK_APP_FILE="app.py"
+# Define the FastAPI application module
+FASTAPI_APP_MODULE="app:app"
 
-# Define the command to run the Flask application
-FLASK_CMD="python3 $FLASK_APP_FILE"
-
-# Define the log file for the Flask application
-LOG_FILE="$PROJECT_DIR/flask_app.log"
-
-# Navigate to the project directory
 cd "$PROJECT_DIR" || { echo "Project directory not found! Exiting."; exit 1; }
+
+cd src
+
+# Define the command to run the FastAPI application using Uvicorn
+UVICORN_CMD="uvicorn $FASTAPI_APP_MODULE --host 0.0.0.0 --port 8000"
+
+# Define the log file for the FastAPI application
+LOG_FILE="$PROJECT_DIR/fastapi_app.log"
 
 # Activate the virtual environment if it exists; otherwise, create it
 if [ -d "$VENV_DIR" ]; then
@@ -35,23 +36,20 @@ else
     source "$VENV_DIR/bin/activate"
 fi
 
-# Upgrade pip to the latest version
 echo "Upgrading pip..."
 pip install --upgrade pip
 
-# Install or update dependencies from requirements.txt
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
-# Stop any running instances of the Flask application
-echo "Stopping existing Flask application instances..."
-pkill -f "$FLASK_CMD" || echo "No existing Flask instances running."
+# Stop any running instances of the FastAPI application
+echo "Stopping existing FastAPI application instances..."
+pkill -f "$UVICORN_CMD" || echo "No existing FastAPI instances running."
 
-# Start the Flask application in the background and redirect output to the log file
-echo "Starting Flask application..."
-nohup $FLASK_CMD > "$LOG_FILE" 2>&1 &
+# Start the FastAPI application in the background and redirect output to the log file
+echo "Starting FastAPI application..."
+nohup $UVICORN_CMD > "$LOG_FILE" 2>&1 &
 
-# Deactivate the virtual environment
 deactivate
 
-echo "Flask application has been restarted successfully."
+echo "FastAPI application has been restarted successfully."
