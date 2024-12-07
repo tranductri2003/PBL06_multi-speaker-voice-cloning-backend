@@ -3,25 +3,33 @@ name: Auto Deploy to Raspberry Pi
 on:
   push:
     branches:
-      - master  # Run the workflow when there is a push to the master branch
+      - master
 
 jobs:
   deploy:
+    name: Deploy to Raspberry Pi
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up SSH
+      - name: Configure SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.PI_SSH_KEY }}
 
-      - name: Deploy to Raspberry Pi
+      - name: Deploy and restart application
+        env:
+          PI_HOST: ${{ secrets.PI_HOST }}
+          PI_USER: ${{ secrets.PI_USER }}
+          PROJECT_PATH: ${{ secrets.PI_BACKEND_PROJECT_DIR_PATH }}
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
-            cd ${{ secrets.PI_BACKEND_PROJECT_DIR_PATH }} &&
-            git pull origin master &&
-            ./restart_server.sh
-          "
+          ssh -o StrictHostKeyChecking=no $PI_USER@$PI_HOST "\
+            echo '🚀 Starting deployment...' && \
+            cd $PROJECT_PATH && \
+            echo '📥 Pulling latest changes...' && \
+            git pull origin master && \
+            echo '🔄 Restarting server...' && \
+            bash restart_server.sh && \
+            echo '✨ Deployment completed!'"

@@ -10,3 +10,4 @@ tensorflow
 torch
 uvicorn
 multipart
+python-multipart

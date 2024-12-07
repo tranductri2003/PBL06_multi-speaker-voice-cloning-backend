@@ -4,52 +4,69 @@
 # Script to Restart the FastAPI Server on Raspberry Pi
 # --------------------------------------------------
 
-# Exit immediately if a command exits with a non-zero status
+# Exit on error
 set -e
 
-# Define the project directory
+# Project configuration
 PROJECT_DIR="/home/tranductri2003/Code/PBL06_multi-speaker-voice-cloning/PBL06_multi-speaker-voice-cloning-backend"
+VENV_DIR="$PROJECT_DIR/env"
+SRC_DIR="$PROJECT_DIR/src"
+SERVER_CMD="python -m uvicorn app:app --reload --host 0.0.0.0 --port 8000"
+LOG_FILE="$PROJECT_DIR/server.log"
 
-# Define the virtual environment directory
-VENV_DIR="$PROJECT_DIR/venv"
+echo "🚀 Starting deployment process..."
 
-# Define the FastAPI application module
-FASTAPI_APP_MODULE="app:app"
+# Navigate to project directory
+cd "$PROJECT_DIR" || { echo "❌ Project directory not found!"; exit 1; }
 
-cd "$PROJECT_DIR" || { echo "Project directory not found! Exiting."; exit 1; }
-
-# Activate the virtual environment if it exists; otherwise, create it
-if [ -d "$VENV_DIR" ]; then
-    echo "Activating existing virtual environment..."
-    source "$VENV_DIR/bin/activate"
-else
-    echo "Virtual environment not found. Creating a new one..."
+# Handle virtual environment
+if [ ! -d "$VENV_DIR" ]; then
+    echo "📦 Creating new virtual environment..."
     python3 -m venv "$VENV_DIR"
-    source "$VENV_DIR/bin/activate"
+else
+    echo "✅ Using existing virtual environment..."
 fi
 
-echo "Upgrading pip..."
-pip install --upgrade pip
+# Activate virtual environment
+echo "🔄 Activating virtual environment..."
+source "$VENV_DIR/bin/activate"
 
-echo "Installing dependencies..."
+# Verify activation
+if [ -z "$VIRTUAL_ENV" ]; then
+    echo "❌ Failed to activate virtual environment"
+    exit 1
+fi
+
+# Update dependencies
+echo "📥 Installing/updating dependencies..."
+pip install --upgrade pip
 pip install -r requirements.txt
 
-cd src
+# Navigate to source directory
+echo "📂 Changing to source directory..."
+cd "$SRC_DIR" || { echo "❌ Source directory not found!"; exit 1; }
 
-# Define the command to run the FastAPI application using Uvicorn
-UVICORN_CMD="uvicorn $FASTAPI_APP_MODULE --host 0.0.0.0 --port 8000"
+# Stop existing server instances
+echo "🛑 Stopping existing server instances..."
+pkill -f "uvicorn app:app" || echo "ℹ️  No existing server running"
 
-# Define the log file for the FastAPI application
-LOG_FILE="$PROJECT_DIR/fastapi_app.log"
+# Start server
+echo "🌟 Starting server..."
+nohup $SERVER_CMD > "$LOG_FILE" 2>&1 &
 
-# Stop any running instances of the FastAPI application
-echo "Stopping existing FastAPI application instances..."
-pkill -f "$UVICORN_CMD" || echo "No existing FastAPI instances running."
+# Wait a bit to check if server started successfully
+sleep 2
 
-# Start the FastAPI application in the background and redirect output to the log file
-echo "Starting FastAPI application..."
-nohup $UVICORN_CMD > "$LOG_FILE" 2>&1 &
+# Check if server is running
+if pgrep -f "uvicorn app:app" > /dev/null; then
+    echo "✨ Server started successfully!"
+    echo "📝 Logs available at: $LOG_FILE"
+else
+    echo "❌ Failed to start server. Check logs at: $LOG_FILE"
+    exit 1
+fi
 
+# Deactivate virtual environment
 deactivate
 
-echo "FastAPI application has been restarted successfully."
+echo "🎉 Deployment completed!"
