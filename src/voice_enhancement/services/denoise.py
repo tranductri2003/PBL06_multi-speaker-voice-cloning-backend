@@ -51,6 +51,8 @@ class DenoiseService:
         X_denoise = m_amp_db_audio - inv_sca_X_pred[:, :, :, 0]
 
         # Reconstruct audio
+        original_audio = self._reconstruct_audio(m_amp_db_audio, m_pha_audio)
+        noised_audio = self._reconstruct_audio(inv_sca_X_pred[:, :, :, 0], m_pha_audio)
         denoised_audio = self._reconstruct_audio(X_denoise, m_pha_audio)
         output_audio = self._prepare_output_audio(denoised_audio)
         
@@ -58,7 +60,10 @@ class DenoiseService:
         visualizations = self.visualizer.generate_visualizations(
             m_amp_db_audio[0],
             inv_sca_X_pred[0, :, :, 0],
-            X_denoise[0]
+            X_denoise[0],
+            original_audio,
+            noised_audio,
+            denoised_audio
         )
         
         return DenoiseResult(

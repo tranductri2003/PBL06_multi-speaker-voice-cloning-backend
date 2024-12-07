@@ -37,7 +37,6 @@ class SpectrogramVisualizer:
             audio_data, 
             sr=self.config.SAMPLE_RATE, 
             x_axis='time', 
-            color='b'
         )
         plt.xlabel("Time (s)")
         plt.ylabel("Amplitude")
@@ -72,6 +71,9 @@ class SpectrogramVisualizer:
         m_amp_db: np.ndarray,
         inv_sca_X_pred: np.ndarray,
         X_denoise: np.ndarray,
+        original_audio: np.ndarray,
+        noised_audio: np.ndarray,
+        denoised_audio: np.ndarray,
     ) -> Tuple[bytes, bytes, bytes, bytes, bytes, bytes]:
         """Generate all visualizations for the denoising process"""
         return (
@@ -90,15 +92,15 @@ class SpectrogramVisualizer:
             ),
             # Waveforms
             self.save_waveplot(
-                m_amp_db,
+                original_audio,
                 "Original Waveform (Voice + Noise)"
             ),
             self.save_waveplot(
-                inv_sca_X_pred,
+                noised_audio,
                 "Predicted Noise Waveform"
             ),
             self.save_waveplot(
-                X_denoise,
+                denoised_audio,
                 "Denoised Voice Waveform"
             )
         )
@@ -134,3 +136,4 @@ class SpectrogramVisualizer:
         buffer.seek(0)
         plt.close()
         return buffer.getvalue()
+    
