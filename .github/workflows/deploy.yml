@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - master
+      - master
 
 jobs:
   deploy:
+    name: Deploy to Raspberry Pi
     name: Deploy to Raspberry Pi
     runs-on: ubuntu-latest
 
@@ -14,6 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Configure SSH
       - name: Configure SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
@@ -24,12 +27,19 @@ jobs:
           PI_HOST: ${{ secrets.PI_HOST }}
           PI_USER: ${{ secrets.PI_USER }}
           PROJECT_PATH: ${{ secrets.PI_BACKEND_PROJECT_DIR_PATH }}
+      - name: Deploy and restart application
+        env:
+          PI_HOST: ${{ secrets.PI_HOST }}
+          PI_USER: ${{ secrets.PI_USER }}
+          PROJECT_PATH: ${{ secrets.PI_BACKEND_PROJECT_DIR_PATH }}
         run: |
           ssh -o StrictHostKeyChecking=no $PI_USER@$PI_HOST "\
             echo '🚀 Starting deployment...' && \
             cd $PROJECT_PATH && \
-            echo '📥 Pulling latest changes...' && \
-            git pull origin master && \
-            echo '🔄 Restarting server...' && \
+            echo '📥 Fetching latest changes...' && \
+            git fetch origin master && \
+            echo '🔄 Resetting to origin/master...' && \
+            git reset --hard origin/master && \
+            echo '🔧 Restarting server...' && \
             bash restart_server.sh && \
             echo '✨ Deployment completed!'"
