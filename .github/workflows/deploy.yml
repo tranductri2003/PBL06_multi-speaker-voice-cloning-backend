@@ -35,5 +35,3 @@ jobs:
             echo '🔧 Restarting server...' && \
             bash restart_server.sh && \
             echo '✨ Deployment completed!'"
-
-</```rewritten_file>
