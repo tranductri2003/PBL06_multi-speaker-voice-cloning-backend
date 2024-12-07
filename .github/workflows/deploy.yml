@@ -28,8 +28,10 @@ jobs:
           ssh -o StrictHostKeyChecking=no $PI_USER@$PI_HOST "\
             echo '🚀 Starting deployment...' && \
             cd $PROJECT_PATH && \
-            echo '📥 Pulling latest changes...' && \
-            git pull origin master && \
-            echo '🔄 Restarting server...' && \
+            echo '📥 Fetching latest changes...' && \
+            git fetch origin master && \
+            echo '🔄 Resetting to origin/master...' && \
+            git reset --hard origin/master && \
+            echo '🔧 Restarting server...' && \
             bash restart_server.sh && \
             echo '✨ Deployment completed!'"
