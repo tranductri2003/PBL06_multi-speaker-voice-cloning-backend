@@ -28,7 +28,6 @@ def generate_speech(text_to_speech_model, text, audio, speaker_verification_mode
             mel_pred, postnet_ouput = text_to_speech_model(text_sequence, pos_text, mel_input, pos_audio, encoded_speech)
             mel_input = torch.concat([mel_input, mel_pred[:, -1:, :]], dim=1)
     mel = postnet_ouput.detach().cpu().numpy()[0].T
-    print(mel[0].shape)
     audio = librosa.feature.inverse.mel_to_audio(mel, sr=Text2SpeechAudioConfig.SAMPLE_RATE, hop_length=Text2SpeechAudioConfig.HOP_LENGTH, win_length=Text2SpeechAudioConfig.WIN_LENGTH)
 
     return audio
