@@ -1,0 +1,1 @@
+from text_to_speech.routers.text_to_speech import router
