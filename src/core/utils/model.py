@@ -24,6 +24,13 @@ class BaseModel(ABC):
     def predict(self, *args, **kwargs):
         """Make predictions using the model"""
         pass
+    
+    def load_model(self):
+        model = self.model_class(device=self.device)
+        if self.model_path is not None:
+            ckpt = torch.load(self.model_path, weights_only=False, map_location="cpu")
+            if ckpt:
+                model.load_state_dict(ckpt["model_state_dict"])
 
     def load_model(self) -> Union[torch.nn.Module, tf.keras.Model]:
         """Load model based on type"""
