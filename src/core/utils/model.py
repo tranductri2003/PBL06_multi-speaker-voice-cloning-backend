@@ -13,6 +13,7 @@ class BaseModel(ABC):
         device: str = 'cpu',
         model_type: str = 'pytorch',
         is_parallel: bool = False,
+        model_state="model_state_dict",
         **kwargs
     ):
         self.model_class = model_class
@@ -20,6 +21,7 @@ class BaseModel(ABC):
         self.device = device
         self.model_type = model_type.lower()
         self.is_parallel = is_parallel
+        self.model_state = model_state
         self.model = self.load_model()
 
     @abstractmethod
@@ -46,8 +48,6 @@ class BaseModel(ABC):
         """Load PyTorch model"""
         # Initialize model
         model = self.model_class(device=self.device)
-        if self.is_parallel:
-            model = torch.nn.DataParallel(model)
         
         # Load weights
         checkpoint = torch.load(
@@ -58,10 +58,24 @@ class BaseModel(ABC):
         
         # Handle different checkpoint formats
         if isinstance(checkpoint, dict):
-            if "model_state_dict" in checkpoint:
-                model.load_state_dict(checkpoint["model_state_dict"], strict=False)
+            if self.model_state in checkpoint:
+                model_state = checkpoint[self.model_state]
+                if self.is_parallel:
+                    model_state = {k.replace("module.", ""): v for k, v in model_state.items()}
+                model.load_state_dict(model_state, strict=False)
             else:
                 model.load_state_dict(checkpoint)
+            
+            if "train_losses" in checkpoint and "eval_losses" in checkpoint:
+                import matplotlib.pyplot as plt
+                plt.plot(checkpoint["train_losses"], label='Training Loss')
+                plt.plot(checkpoint["eval_losses"], label='Eval Loss')
+                plt.xlabel('Epoch')
+                plt.ylabel('Loss')
+                plt.title('Training Loss')
+                plt.legend()
+                plt.savefig('./training_eval_loss.png', dpi=300, bbox_inches='tight')
+                plt.show()
         
         # Set model to evaluation mode
         model.eval()
@@ -80,6 +94,7 @@ class PyTorchModel(BaseModel):
         model_path: Optional[str] = None,
         device: str = 'cpu',
         is_parallel: bool = False,
+        model_state="model_state_dict",
         **kwargs
     ):
         super().__init__(
@@ -88,6 +103,7 @@ class PyTorchModel(BaseModel):
             device=device,
             model_type='pytorch',
             is_parallel=is_parallel,
+            model_state=model_state,
             **kwargs
         )
 

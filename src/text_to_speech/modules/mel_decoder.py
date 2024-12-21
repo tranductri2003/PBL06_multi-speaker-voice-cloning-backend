@@ -15,7 +15,7 @@ class MelDecoder(nn.Module):
         self.positional_encoding = ScaledPositionalEncoding(d_model, n_position=max_position_encoding, dropout=dropout)
         
         # Transformer Decoder Layers
-        decoder_layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=num_heads, dropout=dropout, dim_feedforward=d_model*4)
+        decoder_layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=num_heads, dropout=dropout, dim_feedforward=d_model)
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
         
         # Output layer for mel spectrogram prediction

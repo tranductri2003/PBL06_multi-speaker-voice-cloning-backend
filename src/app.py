@@ -21,6 +21,4 @@ app.add_middleware(
 # Add routers
 app.include_router(speaker_verification_router, prefix="/api/v1", tags=["speaker-verification"])
 # app.include_router(voice_enhancement_router, prefix="/api/v1", tags=["voice-enhancement"])
-# Include each sub-app router
-app.include_router(speaker_verification_router, prefix="/api/speaker_verification")
-app.include_router(text_to_speech_router, prefix="/api/text_to_speech")
+app.include_router(text_to_speech_router, prefix="/api/v1", tags=["voice-cloning"])

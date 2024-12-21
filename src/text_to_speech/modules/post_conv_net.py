@@ -4,7 +4,7 @@ class PostConvNet(nn.Module):
     """
     Post Convolutional Network (mel --> mel)
     """
-    def __init__(self, num_hidden, num_mels=80, outputs_per_step=1, dropout_prob=0.1):
+    def __init__(self, num_hidden, num_mels=80, outputs_per_step=1, dropout_prob=0.1, device="cpu", *args, **kwargs):
         """
         :param num_hidden: Dimension of hidden layers.
         :param num_mels: Number of mel bands.

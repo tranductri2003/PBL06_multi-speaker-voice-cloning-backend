@@ -12,7 +12,7 @@ MODEL_PATHS = {
     "CNN50": os.getenv("VOICE_ENHANCEMENT_CNN50_MODEL"),
     "CNN100": os.getenv("VOICE_ENHANCEMENT_CNN100_MODEL"),
     "OriginTextToSpeech": os.getenv("ORIGINAL_TEXT_TO_SPEECH_MODEL"),
-    "Postnet": os.getenv("POSTNET_MODEL")
+    "Mel2Mag": os.getenv("MEL2MAG_MODEL"),
 }
 
 ACRONYMS_FILEPATH = "core/utils/tokenizer/text_bank/acronyms.json"
