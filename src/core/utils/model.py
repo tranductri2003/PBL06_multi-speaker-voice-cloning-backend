@@ -12,25 +12,20 @@ class BaseModel(ABC):
         model_path: Optional[str] = None,
         device: str = 'cpu',
         model_type: str = 'pytorch',
+        is_parallel: bool = False,
         **kwargs
     ):
         self.model_class = model_class
         self.model_path = Path(model_path) if model_path else None
         self.device = device
         self.model_type = model_type.lower()
+        self.is_parallel = is_parallel
         self.model = self.load_model()
 
     @abstractmethod
     def predict(self, *args, **kwargs):
         """Make predictions using the model"""
         pass
-    
-    def load_model(self):
-        model = self.model_class(device=self.device)
-        if self.model_path is not None:
-            ckpt = torch.load(self.model_path, weights_only=False, map_location="cpu")
-            if ckpt:
-                model.load_state_dict(ckpt["model_state_dict"])
 
     def load_model(self) -> Union[torch.nn.Module, tf.keras.Model]:
         """Load model based on type"""
@@ -51,18 +46,20 @@ class BaseModel(ABC):
         """Load PyTorch model"""
         # Initialize model
         model = self.model_class(device=self.device)
+        if self.is_parallel:
+            model = torch.nn.DataParallel(model)
         
         # Load weights
         checkpoint = torch.load(
             self.model_path,
             map_location=torch.device(self.device),
-            weights_only=True
+            weights_only=False
         )
         
         # Handle different checkpoint formats
         if isinstance(checkpoint, dict):
             if "model_state_dict" in checkpoint:
-                model.load_state_dict(checkpoint["model_state_dict"])
+                model.load_state_dict(checkpoint["model_state_dict"], strict=False)
             else:
                 model.load_state_dict(checkpoint)
         
@@ -82,6 +79,7 @@ class PyTorchModel(BaseModel):
         model_class: torch.nn.Module,
         model_path: Optional[str] = None,
         device: str = 'cpu',
+        is_parallel: bool = False,
         **kwargs
     ):
         super().__init__(
@@ -89,6 +87,7 @@ class PyTorchModel(BaseModel):
             model_path=model_path,
             device=device,
             model_type='pytorch',
+            is_parallel=is_parallel,
             **kwargs
         )
 
