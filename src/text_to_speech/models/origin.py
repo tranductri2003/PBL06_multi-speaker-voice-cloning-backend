@@ -5,11 +5,11 @@ from text_to_speech.modules.mel_decoder import MelDecoder
 from text_to_speech.modules.fusions import Projection
 
 class TNTModel(nn.Module):
-    def __init__(self, d_model=256, num_heads=8, device=None):
+    def __init__(self, d_model=256, num_heads=8, device="cpu"):
         super(TNTModel, self).__init__()
-        self.encoder = TextEncoder(d_model=d_model, num_heads=num_heads, num_layers=3)
-        self.projection = Projection(d_model)
-        self.decoder = MelDecoder(d_model=d_model, num_heads=num_heads, num_layers=3, mel_dim=80)
+        self.encoder = TextEncoder(d_model=d_model, num_heads=num_heads, num_layers=3).to(device)
+        self.projection = Projection(d_model).to(device)
+        self.decoder = MelDecoder(d_model=d_model, num_heads=num_heads, num_layers=3, mel_dim=80).to(device)
         self.device = device
         self.to(self.device)
         

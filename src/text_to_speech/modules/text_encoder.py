@@ -14,7 +14,7 @@ class TextEncoder(nn.Module):
         self.positional_encoding = ScaledPositionalEncoding(d_model, n_position=max_position_encoding, dropout=dropout, padding_idx=0)
         
         # Transformer Encoder Layers
-        encoder_layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dropout=dropout, dim_feedforward=d_model*4, batch_first=True)
+        encoder_layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=num_heads, dropout=dropout, dim_feedforward=d_model, batch_first=True)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
 
         
