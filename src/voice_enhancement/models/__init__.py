@@ -14,6 +14,10 @@ UNET_PLUS_PLUS = TensorFlowModel(
     model_path=MODEL_PATHS["UNetPlusPlus"]
 )
 
+UNET100 = TensorFlowModel(
+    model_path=MODEL_PATHS["UNet100"]
+)
+
 CNN50 = TensorFlowModel(
     model_path=MODEL_PATHS["CNN50"]
 )
@@ -27,6 +31,7 @@ MODEL_MAPPING = {
     "modified_unet": MODIFIED_UNET,
     "unet": UNET,
     "unet_plus_plus": UNET_PLUS_PLUS,
+    "unet100": UNET100, 
     "cnn50": CNN50,
     "cnn100": CNN100
 }
@@ -38,6 +43,7 @@ __all__ = [
     'MODIFIED_UNET',
     'UNET',
     'UNET_PLUS_PLUS',
+    'UNET100',
     'CNN50',
     'CNN100',
     'MODEL_MAPPING',

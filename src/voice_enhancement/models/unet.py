@@ -11,3 +11,7 @@ class UNet(tf.keras.Model):
 class UNetPlusPlus(tf.keras.Model):
     """U-Net++ model for voice enhancement"""
     pass  # Implement model architecture 
+
+class UNet100(tf.keras.Model):
+    """U-Net 100 model for voice enhancement"""
+    pass  # Implement model architecture

@@ -13,6 +13,7 @@ class ModelType(str, Enum):
     MODIFIED_UNET = "modified_unet"
     UNET = "unet"
     UNET_PLUS_PLUS = "unet_plus_plus"
+    UNET100 = "unet100"
     CNN50 = "cnn50"
     CNN100 = "cnn100"
 
