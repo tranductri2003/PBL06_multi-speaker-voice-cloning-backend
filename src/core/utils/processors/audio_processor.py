@@ -84,7 +84,7 @@ class AudioPreprocessor:
         )
 
     def mel_to_audio(self, mel):
-        stft = librosa.feature.inverse.mel_to_stft(mel, sr=16000)
+        stft = librosa.feature.inverse.mel_to_stft(mel, sr=16000, n_fft=self.config.N_FFT)
         return self.stft_to_audio(stft)
 
     def griffin(self, stft):

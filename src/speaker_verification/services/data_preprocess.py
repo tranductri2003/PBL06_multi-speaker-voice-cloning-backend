@@ -5,7 +5,7 @@ import numpy as np
 import soundfile as sf
 import librosa
 
-from speaker_verification.configs.audio_config import LstmSpeakerEncoderAudioConfig
+from speaker_verification.configs.audio_config import LstmSpeakerEncoderAudioConfig, TransformerSpeakerEncoderAudioConfig
 from core.utils.objects.utterance import Utterance
 from core.utils.processors.audio_processor import AudioPreprocessor
 
@@ -48,7 +48,7 @@ def remove_silence(audio: np.ndarray, sr: int, threshold_db: float = -40, min_si
     return audio_clean
 
 
-def preprocess_audio(file: BytesIO | str | Path) -> tuple[torch.Tensor, BytesIO, np.ndarray]:
+def preprocess_audio(file: BytesIO | str | Path, model_type="lstm") -> tuple[torch.Tensor, BytesIO, np.ndarray]:
     """Preprocess audio and return mel spectrogram tensor, cleaned audio, and mel visualization"""
     # Get raw audio data
     if isinstance(file, BytesIO):
@@ -70,18 +70,28 @@ def preprocess_audio(file: BytesIO | str | Path) -> tuple[torch.Tensor, BytesIO,
     sf.write(clean_audio_io, clean_audio, sr, format='WAV')
     clean_audio_io.seek(0)
     
-    # Create utterance from cleaned audio
-    clean_uttn = Utterance(
-        raw_file=clean_audio_io,
-        processor=AudioPreprocessor(config=LstmSpeakerEncoderAudioConfig)
-    )
-    
-    # Get mel spectrogram for model input
-    mel_spectrogram = torch.tensor(
-        np.array(
-            [clean_uttn.random_mel_in_db(num_frames=LstmSpeakerEncoderAudioConfig.NUM_FRAMES)]
+    if model_type == "lstm":
+        clean_uttn = Utterance(
+            raw_file=clean_audio_io,
+            processor=AudioPreprocessor(config=LstmSpeakerEncoderAudioConfig)
         )
-    ).transpose(1, 2)
+        # Get mel spectrogram for model input
+        mel_spectrogram = torch.tensor(
+            np.array(
+                [clean_uttn.random_mel_in_db(num_frames=LstmSpeakerEncoderAudioConfig.NUM_FRAMES)]
+            )
+        ).transpose(1, 2)
+    else:
+        clean_uttn = Utterance(
+            raw_file=clean_audio_io,
+            processor=AudioPreprocessor(config=TransformerSpeakerEncoderAudioConfig)
+        )
+        # Get mel spectrogram for model input
+        mel_spectrogram = torch.tensor(
+            np.array(
+                [clean_uttn.random_mel_in_db(num_frames=TransformerSpeakerEncoderAudioConfig.NUM_FRAMES)]
+            )
+        ).transpose(1, 2)
     
     # Get full mel spectrogram for visualization
     mel_viz = clean_uttn.mel_in_db()
