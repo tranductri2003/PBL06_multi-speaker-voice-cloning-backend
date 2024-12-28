@@ -194,9 +194,12 @@ class Synthesizer:
         return mel_spectrogram
 
     @staticmethod
-    def griffin_lim(mel):
+    def mel_to_audio_using_griffin_lim(mel):
         return inv_mel_spectrogram(mel, hparams)
-
+    
+    @staticmethod
+    def mag_to_audio_using_griffin_lim(mag):
+        return inv_linear_spectrogram(mag, hparams)
 
 def pad1d(x, max_len, pad_value=0):
     return np.pad(x, (0, max_len - len(x)), mode="constant", constant_values=pad_value)
