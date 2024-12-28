@@ -191,11 +191,12 @@ class ModelPostNet(nn.Module):
     """
     CBHG Network (mel --> linear)
     """
-    def __init__(self):
+    def __init__(self, device="cpu"):
         super(ModelPostNet, self).__init__()
-        self.pre_projection = Conv(80, 256)
-        self.cbhg = CBHG(256)
-        self.post_projection = Conv(256, (2048 // 2) + 1)
+        self.device = device
+        self.pre_projection = Conv(80, 256).to(device)
+        self.cbhg = CBHG(256).to(device)
+        self.post_projection = Conv(256, (2048 // 2) + 1).to(device)
 
     def forward(self, mel):
         mel = mel.transpose(1, 2)

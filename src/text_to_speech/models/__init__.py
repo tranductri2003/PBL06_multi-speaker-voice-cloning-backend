@@ -1,17 +1,21 @@
-from text_to_speech.models.origin import TNTModel
-from core.settings import MODEL_PATHS, DEVICE
+from text_to_speech.models.tacotron import Tacotron
+from text_to_speech.models.mel2mag import ModelPostNet
+from core.settings import MODEL_PATHS, DEVICE, EN_TACOTRON_PARAMS
 from core.utils.model import PyTorchModel
 
-# ORIGIN_TEXT_TO_SPEECH = DataParallel(TNTModel())
-# checkpoint = torch.load(MODEL_PATHS["OriginTextToSpeech"], weights_only=False, map_location=DEVICE)
-# ORIGIN_TEXT_TO_SPEECH.load_state_dict(checkpoint["model_state_dict"])
+EN_TACOTRON = PyTorchModel(
+    model_class=Tacotron,
+    model_path=MODEL_PATHS["EN_TACOTRON"],
+    device=DEVICE,
+    is_parallel=True,
+    model_params=EN_TACOTRON_PARAMS,
+    model_state="model_state"
+)
 
-# ORIGIN_TEXT_TO_SPEECH = PyTorchModel(
-#     model_class=TNTModel,
-#     model_path=MODEL_PATHS["OriginTextToSpeech"],
-#     device=DEVICE,
-#     is_parallel=True
-# )
-
-ORIGIN_TEXT_TO_SPEECH = None
-
+MEL2MAG = PyTorchModel(
+    model_class=ModelPostNet,
+    model_path=MODEL_PATHS["Mel2Mag"],
+    device=DEVICE,
+    is_parallel=False,
+    model_state="model"
+)

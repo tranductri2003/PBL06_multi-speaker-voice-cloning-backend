@@ -8,6 +8,7 @@ LSTM_SPEAKER_ENCODER = PyTorchModel(
     model_class=LstmSpeakerEncoder,
     model_path=MODEL_PATHS["LstmSpeakerEncoder"],
     device=DEVICE,
+    model_state="model_state"
 )
 TRANSFORMER_SPEAKER_ENCODER = PyTorchModel(
     model_class=TransformerSpeakerEncoder,

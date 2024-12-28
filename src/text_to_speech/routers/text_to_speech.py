@@ -1,33 +1,30 @@
+import base64
 import time
 from io import BytesIO
 from fastapi import APIRouter, UploadFile, File, Form
-from fastapi.responses import JSONResponse
-from pathlib import Path
 import io
 import soundfile as sf
-from text_to_speech.models import ORIGIN_TEXT_TO_SPEECH
+from text_to_speech.models import EN_TACOTRON, MEL2MAG
 from text_to_speech.configs.audio_config import Text2SpeechAudioConfig
-from speaker_verification.models import TRANSFORMER_SPEAKER_ENCODER
+from speaker_verification.models import LSTM_SPEAKER_ENCODER
 from text_to_speech.services.generate_speech import generate_speech
-from fastapi.responses import StreamingResponse
-router = APIRouter()
+from fastapi.responses import JSONResponse
+
+router = APIRouter(prefix="/voice-cloning")
 
 
-@router.post("/origin")
+@router.post("/tacotron")
 async def text2speech_model1(
     text: str = Form(...),  audio: UploadFile = File(...)
 ):
     start_time = time.time()
-    
-    #----- Generate Speech -----
 
-    audio = generate_speech(text = text, audio = BytesIO(await audio.read()), text_to_speech_model = ORIGIN_TEXT_TO_SPEECH, speaker_verification_model=TRANSFORMER_SPEAKER_ENCODER )
+    audio = generate_speech(text = text, audio = BytesIO(await audio.read()), text_to_speech_model = EN_TACOTRON.model, speaker_verification_model=LSTM_SPEAKER_ENCODER, mel2mag_nodel=MEL2MAG.model)
     audio_buffer = io.BytesIO()
     sf.write(audio_buffer, audio, samplerate=Text2SpeechAudioConfig.SAMPLE_RATE, format='WAV')
     audio_buffer.seek(0)
-    return StreamingResponse(
-        audio_buffer,
-        media_type="audio/wav"
-    )
+    
+    base64_audio = base64.b64encode(audio_buffer.read()).decode("utf-8")
+    return JSONResponse(content={"audio_base64": base64_audio})
 
     

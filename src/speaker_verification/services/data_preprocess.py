@@ -5,7 +5,7 @@ import numpy as np
 import soundfile as sf
 import librosa
 
-from speaker_verification.configs.audio_config import SpeakerEncoderAudioConfig
+from speaker_verification.configs.audio_config import LstmSpeakerEncoderAudioConfig
 from core.utils.objects.utterance import Utterance
 from core.utils.processors.audio_processor import AudioPreprocessor
 
@@ -55,7 +55,7 @@ def preprocess_audio(file: BytesIO | str | Path) -> tuple[torch.Tensor, BytesIO,
         file.seek(0)
         audio_data, sr = sf.read(file)
     else:
-        audio_data, sr = librosa.load(str(file), sr=SpeakerEncoderAudioConfig.SAMPLE_RATE)
+        audio_data, sr = librosa.load(str(file), sr=LstmSpeakerEncoderAudioConfig.SAMPLE_RATE)
     
     # Remove silence
     clean_audio = remove_silence(
@@ -73,13 +73,13 @@ def preprocess_audio(file: BytesIO | str | Path) -> tuple[torch.Tensor, BytesIO,
     # Create utterance from cleaned audio
     clean_uttn = Utterance(
         raw_file=clean_audio_io,
-        processor=AudioPreprocessor(config=SpeakerEncoderAudioConfig)
+        processor=AudioPreprocessor(config=LstmSpeakerEncoderAudioConfig)
     )
     
     # Get mel spectrogram for model input
     mel_spectrogram = torch.tensor(
         np.array(
-            [clean_uttn.random_mel_in_db(num_frames=SpeakerEncoderAudioConfig.NUM_FRAMES)]
+            [clean_uttn.random_mel_in_db(num_frames=LstmSpeakerEncoderAudioConfig.NUM_FRAMES)]
         )
     ).transpose(1, 2)
     
