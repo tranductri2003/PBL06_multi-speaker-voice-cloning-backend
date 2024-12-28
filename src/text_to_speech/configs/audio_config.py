@@ -4,7 +4,7 @@ from core.utils.configs.audio import AudioConfig
 class Text2SpeechAudioConfig(AudioConfig):
     N_MELS = 80
     SAMPLE_RATE = 16000
-    N_FFT = 2048
+    N_FFT = 800
     FRAME_SHIFT = 0.0125
     FRAME_LENGTH = 0.05
     REF_LEVEL_DB = 20

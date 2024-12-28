@@ -14,6 +14,7 @@ class BaseModel(ABC):
         model_type: str = 'pytorch',
         is_parallel: bool = False,
         model_state="model_state_dict",
+        model_params={},
         **kwargs
     ):
         self.model_class = model_class
@@ -22,6 +23,7 @@ class BaseModel(ABC):
         self.model_type = model_type.lower()
         self.is_parallel = is_parallel
         self.model_state = model_state
+        self.model_params = model_params
         self.model = self.load_model()
 
     @abstractmethod
@@ -47,7 +49,7 @@ class BaseModel(ABC):
     def _load_pytorch_model(self) -> torch.nn.Module:
         """Load PyTorch model"""
         # Initialize model
-        model = self.model_class(device=self.device)
+        model = self.model_class(device=self.device, **self.model_params)
         
         # Load weights
         checkpoint = torch.load(

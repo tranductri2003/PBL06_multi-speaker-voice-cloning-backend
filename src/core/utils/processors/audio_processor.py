@@ -1,10 +1,9 @@
 import librosa
 import numpy as np
-from core.utils.configs.audio import AudioConfig
 
 
 class AudioPreprocessor:
-    def __init__(self, config: AudioConfig):
+    def __init__(self, config):
         self.config = config
 
     def normalize(self, spectrogram_in_db):
@@ -57,15 +56,14 @@ class AudioPreprocessor:
         return self.normalize(magnitude_in_db)
 
     def magnitude_to_stft(self, magnitude_in_amp):
-        # Use a random phase
         random_phase = np.random.uniform(-np.pi, np.pi, size=magnitude_in_amp.shape)
+        
         return magnitude_in_amp * np.exp(1j * random_phase)
 
     def denormalize(self, spectrogram_in_db):
         denormalized_spectrogram_in_db = (
-            spectrogram_in_db * -self.config.MIN_LEVEL_DB
-            + self.config.REF_LEVEL_DB + self.config.MIN_LEVEL_DB
-        )
+            ((np.clip(spectrogram_in_db, - 4, 4) + 4) * - self.config.MIN_LEVEL_DB / (2 * 4)) + self.config.MIN_LEVEL_DB
+            )
         return denormalized_spectrogram_in_db
     
     def db_to_amp(self, magnitude_in_db):

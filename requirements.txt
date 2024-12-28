@@ -11,3 +11,5 @@ torch
 uvicorn
 multipart
 python-multipart
+inflect
+unidecode
