@@ -2,7 +2,7 @@ import torch
 from torch.nn.functional import cosine_similarity
 from speaker_verification.services.data_preprocess import preprocess_audio
 from speaker_verification.services.visualization import visualize_mel_spectrogram
-
+import numpy as np
 
 def calculate_cosine_similarity(model, audio1, audio2, model_type="lstm"):
     # Get mel spectrograms, cleaned audio and visualizations
@@ -13,6 +13,8 @@ def calculate_cosine_similarity(model, audio1, audio2, model_type="lstm"):
         # Get embeddings from mel spectrograms
         embedding1 = model(mel_spec1)
         embedding2 = model(mel_spec2)
+        
+        np.save("./encoded_speech.npy", embedding1.detach().numpy()[0])
 
         # Calculate mean embeddings
         mean_embedding1 = torch.mean(embedding1, dim=0)
