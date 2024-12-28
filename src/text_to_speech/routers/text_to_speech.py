@@ -19,7 +19,7 @@ async def text2speech_model1(
 ):
     start_time = time.time()
 
-    audio = generate_speech(text = text, audio = BytesIO(await audio.read()), text_toS_speech_model = EN_TACOTRON.model, speaker_verification_model=LSTM_SPEAKER_ENCODER, mel2mag_nodel=MEL2MAG.model)
+    audio = generate_speech(text = text, audio = BytesIO(await audio.read()), text_to_speech_model = EN_TACOTRON.model, speaker_verification_model=LSTM_SPEAKER_ENCODER, mel2mag_nodel=MEL2MAG.model)
     audio_buffer = io.BytesIO()
     sf.write(audio_buffer, audio, samplerate=Text2SpeechAudioConfig.SAMPLE_RATE, format='WAV')
     audio_buffer.seek(0)

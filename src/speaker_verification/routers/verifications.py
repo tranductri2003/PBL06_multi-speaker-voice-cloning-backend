@@ -33,6 +33,7 @@ async def compare_utterances(
             model,
             BytesIO(await first_audio.read()),
             BytesIO(await second_audio.read()),
+            model_type=model_type,
         )
         
         return JSONResponse(

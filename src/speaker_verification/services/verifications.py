@@ -4,10 +4,10 @@ from speaker_verification.services.data_preprocess import preprocess_audio
 from speaker_verification.services.visualization import visualize_mel_spectrogram
 
 
-def calculate_cosine_similarity(model, audio1, audio2):
+def calculate_cosine_similarity(model, audio1, audio2, model_type="lstm"):
     # Get mel spectrograms, cleaned audio and visualizations
-    mel_spec1, clean_audio1, mel_viz1 = preprocess_audio(audio1)
-    mel_spec2, clean_audio2, mel_viz2 = preprocess_audio(audio2)
+    mel_spec1, clean_audio1, mel_viz1 = preprocess_audio(audio1, model_type=model_type)
+    mel_spec2, clean_audio2, mel_viz2 = preprocess_audio(audio2, model_type=model_type)
 
     with torch.no_grad():
         # Get embeddings from mel spectrograms
