@@ -59,3 +59,35 @@ class Utterance(object):
 
     def magtitude(self):
         return self.processor.audio_to_magnitude_db(self.audio)
+
+    def compute_partial_slices(self, n_samples, partial_utterance_n_frames=80,
+                           min_pad_coverage=0.75, overlap=0.5):
+        samples_per_frame = int(self.processor.config.SAMPLE_RATE * self.processor.config.FRAME_SHIFT)
+        n_frames = int(np.ceil((n_samples + 1) / samples_per_frame))
+        frame_step = max(int(np.round(partial_utterance_n_frames * (1 - overlap))), 1)
+    
+        wav_slices, mel_slices = [], []
+        for i in range(0, n_frames, frame_step):
+            mel_start = i
+            mel_end = mel_start + partial_utterance_n_frames
+    
+            if mel_end > n_frames:  # Adjust for slices that exceed available frames
+                mel_start = max(0, n_frames - partial_utterance_n_frames)
+                mel_end = n_frames
+    
+            if mel_end - mel_start == partial_utterance_n_frames:  # Validate slice size
+                mel_slices.append(slice(mel_start, mel_end))
+                wav_slices.append(slice(mel_start * samples_per_frame, mel_end * samples_per_frame))
+    
+        return wav_slices, mel_slices
+
+    
+
+    def split_mel_into_frames(self, partial_utterance_n_frames=160, overlap=0.5):
+        mel_spectrogram = self.mel_in_db()
+        n_samples = len(self.audio)
+        _, mel_slices = self.compute_partial_slices(n_samples, 
+                                                    partial_utterance_n_frames=partial_utterance_n_frames, 
+                                                    overlap=overlap)
+        mel_frames = [mel_spectrogram[:, s] for s in mel_slices]
+        return mel_frames

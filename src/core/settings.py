@@ -46,3 +46,20 @@ EN_TACOTRON_PARAMS = {
     "stop_threshold": TTS_STOP_THRESHOLD, 
     "speaker_embedding_size": 256
 }
+
+VN_TACOTRON_PARAMS = {
+    "embed_dims": 512, 
+    "num_chars": 93, 
+    "encoder_dims": 256, 
+    "decoder_dims": 128, 
+    "n_mels": 80, 
+    "fft_bins": 80, 
+    "postnet_dims": 512, 
+    "encoder_K": 5, 
+    "lstm_dims": 1024, 
+    "postnet_K": 5, 
+    "num_highways": 4,
+    "dropout": 0.5, 
+    "stop_threshold": TTS_STOP_THRESHOLD, 
+    "speaker_embedding_size": 256
+}
