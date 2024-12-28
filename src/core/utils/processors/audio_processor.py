@@ -1,5 +1,6 @@
 import librosa
 import numpy as np
+from scipy import signal
 
 
 class AudioPreprocessor:
@@ -82,14 +83,35 @@ class AudioPreprocessor:
             hop_length=self.config.HOP_LENGTH,
             win_length=self.config.WIN_LENGTH,
         )
+        
+    def inv_preemphasis(self, wav):
+        if self.config.PRE_EMPHASIS is not None:
+            return signal.lfilter([1], [1, -self.config.PRE_EMPHASIS], wav)
+        return wav
+        
+    def mel_to_linear(self, mel):
+        filter_bank = librosa.filters.mel(sr=self.config.SAMPLE_RATE, n_fft=self.config.N_FFT, n_mels=self.config.N_MELS,
+                               fmin=self.config.FMIN, fmax=self.config.FMAX)
+        inv_filter_bank = np.linalg.pinv(filter_bank)
+        return np.maximum(1e-10, np.dot(inv_filter_bank, mel))
 
-    def mel_to_audio(self, mel):
-        stft = librosa.feature.inverse.mel_to_stft(mel, sr=16000, n_fft=self.config.N_FFT)
-        return self.stft_to_audio(stft)
+    def mel_to_audio(self, mel_db):
+        mel_amp = self.denormalize(mel_db + self.config.REF_LEVEL_DB)
+        stft = self.mel_to_linear(mel_amp)
+        return self.inv_preemphasis(self.griffin(stft ** self.config.POWER))
+
+    def istft(self, stft):
+        return librosa.istft(stft, hop_length=self.config.HOP_LENGTH, win_length=self.config.WIN_LENGTH)
 
     def griffin(self, stft):
-        return  librosa.griffinlim(stft)
-
+        angles = np.exp(2j * np.pi * np.random.rand(*stft.shape))
+        stft_complex = np.abs(stft).astype(np.complex128)
+        audio = self.istft(stft_complex * angles)
+        for _ in range(60):
+            angles = np.exp(1j * np.angle(self.audio_to_stft(audio)))
+            audio = self.istft(stft_complex * angles)
+        return audio
+    
     def magnitude_db_to_audio_using_griffin(self, magnitude_in_db):
         magnitude_in_db = self.denormalize(magnitude_in_db)
         magnitude_in_amp = self.db_to_amp(magnitude_in_db)

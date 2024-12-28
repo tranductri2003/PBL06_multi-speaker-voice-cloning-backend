@@ -150,3 +150,11 @@ class Tacotron(nn.Module):
             print("Trainable Parameters: %.3fM" % parameters)
         
         return parameters
+    
+    def load(self, path, optimizer=None):
+        device = next(self.parameters()).device
+        checkpoint = torch.load(str(path), map_location=device)
+        self.load_state_dict(checkpoint["model_state"])
+
+        if "optimizer_state" in checkpoint and optimizer is not None:
+            optimizer.load_state_dict(checkpoint["optimizer_state"])
