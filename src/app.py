@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from speaker_verification.routers import speaker_verification_router
-# from voice_enhancement.routers import voice_enhancement_router
+from voice_enhancement.routers import voice_enhancement_router
 from fastapi.middleware.cors import CORSMiddleware
 from text_to_speech.routers import router as text_to_speech_router
 
@@ -20,5 +20,5 @@ app.add_middleware(
 
 # Add routers
 app.include_router(speaker_verification_router, prefix="/api/v1", tags=["speaker-verification"])
-# app.include_router(voice_enhancement_router, prefix="/api/v1", tags=["voice-enhancement"])
+app.include_router(voice_enhancement_router, prefix="/api/v1", tags=["voice-enhancement"])
 app.include_router(text_to_speech_router, prefix="/api/v1", tags=["voice-cloning"])
