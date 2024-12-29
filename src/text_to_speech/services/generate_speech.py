@@ -101,8 +101,8 @@ def generate_speech(text, audio, lang="en"):
         base64_pred_audio = base64.b64encode(pred_audio_buffer.read()).decode("utf-8")
         
         base64_mel_spec = base64.b64encode(gen_spec_buffer(mel, spec="Mel")).decode("utf-8")
-        base64_inv_filter_bank_mag_spec = base64.b64encode(gen_spec_buffer(en_synthsiser.generate_magnitude_from_audio(inv_filter_bank_audio), spec="Mel")).decode("utf-8")
-        base64_pred_mag_spec = base64.b64encode(gen_spec_buffer(pred_mag.detach().cpu().numpy()[0].T, spec="Mel")).decode("utf-8")
+        base64_inv_filter_bank_mag_spec = base64.b64encode(gen_spec_buffer(en_synthsiser.generate_magnitude_from_audio(inv_filter_bank_audio), spec="Magnitude")).decode("utf-8")
+        base64_pred_mag_spec = base64.b64encode(gen_spec_buffer(pred_mag.detach().cpu().numpy()[0].T, spec="Magnitude")).decode("utf-8")
         lang = "en"
         
     return {
