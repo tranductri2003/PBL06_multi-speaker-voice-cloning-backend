@@ -13,6 +13,7 @@ MODEL_PATHS = {
     "CNN50": os.getenv("VOICE_ENHANCEMENT_CNN50_MODEL"),
     "CNN100": os.getenv("VOICE_ENHANCEMENT_CNN100_MODEL"),
     "EN_TACOTRON": os.getenv("EN_TACOTRON"),
+    "VI_TACOTRON": os.getenv("VI_TACOTRON"),
     "Mel2Mag": os.getenv("MEL2MAG_MODEL"),
 }
 
@@ -48,7 +49,7 @@ EN_TACOTRON_PARAMS = {
     "speaker_embedding_size": 256
 }
 
-VN_TACOTRON_PARAMS = {
+VI_TACOTRON_PARAMS = {
     "embed_dims": 512, 
     "num_chars": 93, 
     "encoder_dims": 256, 

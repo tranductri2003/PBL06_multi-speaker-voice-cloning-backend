@@ -12,7 +12,6 @@ import ast
 import pprint
 
 from text_to_speech.models.tacotron import Tacotron
-from core.utils.text2sequence.en import EnglishText2Sequence
 from core.settings import EN_TACOTRON_PARAMS
 
 class HParams(object):
@@ -106,7 +105,7 @@ class Synthesizer:
     sample_rate = hparams.sample_rate
     hparams = hparams
 
-    def __init__(self, model_fpath=None, model=None, verbose=True):
+    def __init__(self, model_fpath=None, t2s_model=None, t2seq=None, verbose=True):
         self.model_fpath = model_fpath
         self.verbose = verbose
 
@@ -115,17 +114,19 @@ class Synthesizer:
         if self.verbose:
             print("Synthesizer using device:", self.device)
 
-        self._model = model
+        self._t2s_model = t2s_model
+        self._t2s_model.eval()
+        self._t2seq = t2seq
 
     def is_loaded(self):
-        return self._model is not None
+        return self._t2s_model is not None
 
     def load(self):
 
-        self._model = Tacotron(**EN_TACOTRON_PARAMS).to(self.device)
+        self._t2s_model = Tacotron(**EN_TACOTRON_PARAMS).to(self.device)
 
-        self._model.load(self.model_fpath)
-        self._model.eval()
+        self._t2s_model.load(self.model_fpath)
+        self._t2s_model.eval()
 
     def synthesize_spectrograms(self, texts: List[str],
                                 embeddings: Union[np.ndarray, List[np.ndarray]],
@@ -134,9 +135,8 @@ class Synthesizer:
             self.load()
 
         # Preprocess text inputs
-        t2seq = EnglishText2Sequence()
         print(texts)
-        inputs = [t2seq(text.strip()) for text in texts]
+        inputs = [self._t2seq(text.strip()) for text in texts]
         if not isinstance(embeddings, list):
             embeddings = [embeddings]
 
@@ -165,7 +165,7 @@ class Synthesizer:
             speaker_embeddings = torch.tensor(speaker_embeds).float().to(self.device)
 
             # Inference
-            _, mels, alignments = self._model.generate(chars, speaker_embeddings)
+            _, mels, alignments = self._t2s_model.generate(chars, speaker_embeddings)
             mels = mels.detach().cpu().numpy()
             for m in mels:
                 while np.max(m[:, -1]) < hparams.tts_stop_threshold:
@@ -197,6 +197,11 @@ class Synthesizer:
     def mel_to_audio_using_griffin_lim(mel):
         return inv_mel_spectrogram(mel, hparams)
     
+    @staticmethod
+    def generate_magnitude_from_audio(audio):
+        return linearspectrogram(audio, hparams)
+        
+        
     @staticmethod
     def mag_to_audio_using_griffin_lim(mag):
         return inv_linear_spectrogram(mag, hparams)

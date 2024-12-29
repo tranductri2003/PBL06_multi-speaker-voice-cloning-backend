@@ -89,5 +89,15 @@ class Utterance(object):
         _, mel_slices = self.compute_partial_slices(n_samples, 
                                                     partial_utterance_n_frames=partial_utterance_n_frames, 
                                                     overlap=overlap)
-        mel_frames = [mel_spectrogram[:, s] for s in mel_slices]
+        mel_frames = []
+        for s in mel_slices:
+            mel_frame = mel_spectrogram[:, s]
+            if mel_frame.shape[1] == partial_utterance_n_frames:
+                mel_frames.append(mel_frame)
+            elif mel_frame.shape[1] > 0.9 * partial_utterance_n_frames:
+                padding = partial_utterance_n_frames - mel_frame.shape[1]
+                pad_left = padding // 2
+                pad_right = padding - pad_left
+                mel_frame = np.pad(mel_frame, ((0, 0), (pad_left, pad_right)), mode="constant")
+                mel_frames.append(mel_frame)
         return mel_frames
