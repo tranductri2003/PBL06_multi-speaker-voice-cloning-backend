@@ -1,3 +1,4 @@
+from io import BytesIO
 import torch
 from torch.nn.functional import cosine_similarity
 from speaker_verification.services.data_preprocess import preprocess_audio
@@ -42,12 +43,12 @@ def calculate_cosine_similarity(model, audio1, audio2, model_type="lstm"):
     mel_spec2, clean_audio2, mel_viz2 = preprocess_audio(audio2, model_type=model_type)
     
     clean_uttn1 = Utterance(
-            raw_file=clean_audio1,
+            raw_file=BytesIO(clean_audio1.getvalue()),
             processor=AudioPreprocessor(config=config)
         )
     
     clean_uttn2 = Utterance(
-            raw_file=clean_audio2,
+            raw_file=BytesIO(clean_audio2.getvalue()),
             processor=AudioPreprocessor(config=config)
         )
 
