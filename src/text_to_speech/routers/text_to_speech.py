@@ -15,7 +15,7 @@ router = APIRouter(prefix="/voice-cloning")
 
 @router.post("/tacotron")
 async def text2speech_model1(
-    text: str = Form(...),  audio: UploadFile = File(...), lang="en"
+    text: str = Form(...),  audio: UploadFile = File(...), lang: str = Form(...)
 ):
     start_time = time.time()
 

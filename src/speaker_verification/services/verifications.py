@@ -8,6 +8,16 @@ from speaker_verification.configs.audio_config import LstmSpeakerEncoderAudioCon
 from core.utils.objects.utterance import Utterance
 from core.utils.processors.audio_processor import AudioPreprocessor
 
+
+def stack_and_reverse_dimensions(input_list):
+    # Reverse the dimensions of each array in the list
+    reversed_list = [item.T for item in input_list]
+    
+    # Stack the reversed arrays along the first dimension
+    stacked_array = np.stack(reversed_list, axis=0)
+    return stacked_array
+
+
 def embed_frames_batch(frames_batch, model, device):
     if model is None:
         raise Exception("Model was not loaded. Call load_model() before inference.")
@@ -15,6 +25,7 @@ def embed_frames_batch(frames_batch, model, device):
     frames = torch.from_numpy(frames_batch).to(device)
     embed = model.forward(frames).detach().cpu().numpy()
     return embed
+
 
 def embed_utterance(model,utterance, using_partials=False, device="cpu"):
     # Process the entire utterance if not using partials
@@ -35,6 +46,7 @@ def embed_utterance(model,utterance, using_partials=False, device="cpu"):
     embed = raw_embed / np.linalg.norm(raw_embed, 2)
 
     return embed
+
 
 def calculate_cosine_similarity(model, audio1, audio2, model_type="lstm"):
     config = LstmSpeakerEncoderAudioConfig if model_type == "lstm" else TransformerSpeakerEncoderAudioConfig

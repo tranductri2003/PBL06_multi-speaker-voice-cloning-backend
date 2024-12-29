@@ -12,7 +12,6 @@ import ast
 import pprint
 
 from text_to_speech.models.tacotron import Tacotron
-from core.utils.text2sequence.en import EnglishText2Sequence
 from core.settings import EN_TACOTRON_PARAMS
 
 class HParams(object):
@@ -106,7 +105,7 @@ class Synthesizer:
     sample_rate = hparams.sample_rate
     hparams = hparams
 
-    def __init__(self, model_fpath=None, t2s_model=None, verbose=True):
+    def __init__(self, model_fpath=None, t2s_model=None, t2seq=None, verbose=True):
         self.model_fpath = model_fpath
         self.verbose = verbose
 
@@ -117,6 +116,7 @@ class Synthesizer:
 
         self._t2s_model = t2s_model
         self._t2s_model.eval()
+        self._t2seq = t2seq
 
     def is_loaded(self):
         return self._t2s_model is not None
@@ -135,9 +135,8 @@ class Synthesizer:
             self.load()
 
         # Preprocess text inputs
-        t2seq = EnglishText2Sequence()
         print(texts)
-        inputs = [t2seq(text.strip()) for text in texts]
+        inputs = [self._t2seq(text.strip()) for text in texts]
         if not isinstance(embeddings, list):
             embeddings = [embeddings]
 
